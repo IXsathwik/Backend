@@ -21,10 +21,12 @@ class Student {
         this.age = age;
     }
 
+    @Override
     public String toString() {
         return id + "," + name + "," + age;
     }
 }
+
 
 public class problem5 {
 
@@ -36,23 +38,27 @@ public class problem5 {
         File validFile = new File("valid.txt");
         File invalidFile = new File("invalid.txt");
 
-        List<Student> studentList = new ArrayList<>();
-        Set<Student> studentSet = new HashSet<>();
+        
+        Map<Integer, Student> studentMap = new HashMap<>();
 
         try (
             BufferedReader br = new BufferedReader(new FileReader(inputFile));
             BufferedWriter validWriter = new BufferedWriter(new FileWriter(validFile));
             BufferedWriter invalidWriter = new BufferedWriter(new FileWriter(invalidFile))
         ) {
+
             logger.info("File reading started");
-            
 
             String line;
 
+            
             while ((line = br.readLine()) != null) {
                 try {
                     Student s = processLine(line);
-                    studentSet.add(s); 
+
+                    
+                    studentMap.put(s.id, s);
+
                 } catch (InvalidStudentException e) {
                     invalidWriter.write(line);
                     invalidWriter.newLine();
@@ -60,10 +66,8 @@ public class problem5 {
                 }
             }
 
-
-            studentList.addAll(studentSet);
-
-            for (Student s : studentList) {
+            
+            for (Student s : studentMap.values()) {
                 validWriter.write(s.toString());
                 validWriter.newLine();
             }
@@ -77,8 +81,10 @@ public class problem5 {
         }
     }
 
+    
     public static Student processLine(String line) throws InvalidStudentException {
 
+        
         String[] parts = line.split(",");
 
         if (parts.length != 3) {
@@ -86,7 +92,7 @@ public class problem5 {
         }
 
         try {
-            Integer id = Integer.parseInt(parts[0].trim());
+            Integer id = Integer.parseInt(parts[0].trim()); 
             String name = cleanName(parts[1]);
             Integer age = Integer.parseInt(parts[2].trim());
 
@@ -100,6 +106,7 @@ public class problem5 {
             throw new InvalidStudentException("Invalid numeric data");
         }
     }
+
 
     private static String cleanName(String rawName) {
         StringBuilder sb = new StringBuilder();
